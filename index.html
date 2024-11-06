@@ -1,0 +1,1828 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/FMcss.css">
+        <style>
+        #map {
+            position:absolute; z-index:-1;
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 100%;     
+        }
+        </style>
+        <title></title>
+    </head>
+    
+    <header>
+        <img class="logo" src="images/FM_vänster_neg.png" alt="logo" />
+        
+        <button id="showBoxBtn" class="btn-about">Symbologi</button>
+
+        <div id="box" class="hidden">
+          <div class="listBox">
+          <button class="boxBtn" imgurl="legend/Riksintressepland_2.png" data-text="Öppna riksintressen på land visualiseras i karta med en svart heldragen linje.<br><br>
+            Öppet redovisade riksintressen på land kan exempelvis vara skjutfält, flygplatser, övningsfält
+            eller skjutbanor. Riksintressen för totalförsvarets militära del har pekats ut för att skydda
+            omistliga verksamhetsområden eller funktioner som krävs för att säkerställa att Försvarsmakten
+            kan upprätthålla och utveckla ett militärt försvar av Sverige.">Riksinstressen på land</button>
+          <button class="boxBtn" imgurl="legend/Riksintresseihavetsjvningsomrde_3.png"  data-text="Riksintresse i havet (sjöövningsområde) visualiseras i karta med en ljusblå yta.<br><br>
+            Sjöövningsområden krävs för att fartygsförband i samverkan med flyg- och helikopterförband
+            ska kunna öva Försvarsmaktens huvuduppgift, förmågan till väpnad strid. Utpekade sjöövningsområden av riksintresse syftar till att bevara möjligheten att bedriva verksamhet inom
+            områden med bland annat olika kust- och havsförhållanden samt skilda metrologiska och
+            hydrologiska förhållanden. Det är av vital betydelse för Försvarsmakten att övningsverksamheten inom sjöövningsområdena säkerställs även på lång sikt.<br><br>
+            Fysiska hinder över, på eller under vattnet såväl som tekniska hinder riskerar att påverka
+            möjligheterna att nyttja sjöövningsområdena för övning och utbildning utan störning.">Riksinterssen i havet (sjöövningområde)</button>
+          <button class="boxBtn" imgurl="legend/Omrdeavbetydelsepland_10.png" data-text="Områden av betydelse på land visualiseras i karta med en svartstreckad linje.
+            Öppet redovisade områden av betydelse på land kan exempelvis vara verksamhetsområden,
+            anläggningar eller områden med infrastruktur som är av betydelse för Försvarsmyndigheternas
+            möjlighet att bedriva nödvändig verksamhet.">Område med betydlese på land</button>
+          <button class="boxBtn" imgurl="legend/Omrdemedsrskiltbehovavhinderfrihet_9.png" data-text="Område med särskilt behov av hinderfrihet visualiseras i karta med en grönstreckad yta.<br><br>
+            Område med särskilt behov av hinderfrihet tillhör alltid ett eller flera skjut- eller övningsfält
+            av riksintresse eller område av betydelse för totalförsvarets militära del. Området anger en
+            yta inom vilken det föreligger ett särskilt behov av att säkerställa hinderfrihet i anslutning till
+            riksintresset eller området av betydelse. Detta främst i syfte att möjliggöra samövning mellan
+            Försvarsmaktens flygande förband och markförband. Exempel på sådan verksamhet är inflygning med helikopter, understödjande av markstridsförband, övning med luftvärnssystem mot
+            flygande mål eller flygbekämpning av markmål.<br><br>
+            Tillkommande höga objekt inom område med särskilt behov av hinderfrihet riskerar att
+            skada värdet av det riksintresse eller område av betydelse området tillhör, och därigenom
+            medföra påtaglig skada på detta. Försvarsmakten kommer därför beakta hur ett föreslaget högt
+            objekt inom område med särskilt behov av hinderfrihet skulle påverka värdet av berört riksintresse eller område av betydelse, avseende möjligheten att nyttja detta för den
+             verksamhet som ligger till grund för det särskilda behovet av hinderfrihet.">Område med särskilt behov av hinderfrihet</button>
+          <button class="boxBtn" imgurl="legend/MSAomrde_11.png" data-text="MSA-område visualiseras i karta med en blå cirkel.<br><br>
+            Ett MSA-område är ett påverkansområde kring en flygplats som utgör riksintresse för totalförsvarets militära del. Militär definition av MSA avser ”Minimum Safe Altitude”. MSA anger den
+            minimihöjd kring en militär flygplats inom vilken det är säkert att genomföra in- och utflygningar.
+            MSA syftar till att säkerställa möjligheten att genomföra visuell inflygning till en flygplats.<br><br>
+            Ett militärt MSA-områdes utbredning utgörs av en radie om 46 km från berörda flygbanors
+            mittpunkt. Gränsen för vad som utgör en säker höjd beräknas från MSA-områdets högsta
+            objekt eller terrängformation (höjd i meter över havet). MSA-områden delas in i kvadranter
+            angivna efter väderstreck enligt följande: NV, NO, SV och SO.">MSA område</button>
+          <button class="boxBtn" imgurl="legend/Lgflygningsomrdemedpverkansomrde_12.png" data-text="Lågflygningsområden visualiseras i karta med en blåstreckad yta.<br><br>
+            Lågflygningsområden utgör områden av betydelse enligt 3 kap. 9 § första stycket miljöbalken.
+            Dessa områden uppfyller tillsammans nödvändiga och värdefulla kriterier för lågflygning. Att
+            utföra flyguppdrag på låg höjd är en avgörande förmåga för Försvarsmaktens flygförband,
+            därför är tillgång till områden som möjliggör övning av denna förmåga av största vikt. Utpekade
+            lågflygningsområden möjliggör bland annat övning i olika typer av terräng, samövningar med
+            markförband i anslutning till övnings- och skjutfält och att lågflygning kan bedrivas i anslutning
+            till flygflottiljernas lokalisering.<br><br>
+            En ökad mängd höga objekt i lågflygningsområden kan skada möjligheten att nyttja området
+            på ett utifrån Försvarsmaktens uppdrag ändamålsenligt sätt, vilket skulle påtagligt motverka totalförsvarets intressen. Försvarsmakten kommer därför beakta hur ett föreslaget högt
+            objekt inom ett lågflygningsområde skulle påverka värdet av detta.">Lågflygningsområde med påverkansområde</button>
+          <button class="boxBtn" imgurl="legend/Stoppomrdefrhgaobjekt_6.png" data-text="Stoppområde för höga objekt visualiseras i karta med en ljust rosafärgad yta.<br><br>
+            Ett stoppområde för höga objekt är ett påverkansområde kring en flygplats som utgör riksintresse för totalförsvarets militära del. Inom stoppområde för höga objekt riskerar vindkraftverk och andra höga objekt att medföra påtaglig skada på riksintresset, då sådana påverkar
+            möjligheterna till säkra start- och landningar för den flygande verksamheten.">Stoppområde för höga objekt</button>
+          <button class="boxBtn" imgurl="legend/Pverkansomrdecivilflygplats_8.png" data-text="Påverkansområde civil flygplats visualiseras i karta med en rödstreckad yta.<br><br>
+            Försvarsmakten har i händelse av kris och väpnad konflikt behov av att bland annat nyttja
+            civila flygplatser. Vissa civila flygplatser som Försvarsmakten har behov av att nyttja utgör
+            område av betydelse enligt 3 kap. 9 § första stycket miljöbalken.">Stoppområde civil flygplats</button>
+          <button class="boxBtn" imgurl="legend/Pverkansomrdevrigt_4.png" data-text="Påverkansområde övrigt visualiseras i karta med en lilafärgad yta.<br><br>
+            Ett påverkansområde övrigt är ett område kring ett riksintresse eller område av betydelse för
+            totalförsvarets militära del. Uppgifter om den exakta lokaliseringen av riksintresset eller området
+            av betydelse samt uppgifter om vilken verksamhet som bedrivs där omfattas av sekretess
+            enligt 15 kap. 2 § offentlighets- och sekretesslagen (2009:400). Själva påverkansområdet
+            omfattas inte av sekretess. Utpekandet av ett påverkansområde övrigt säkerställer Försvarsmaktens möjlighet att bevaka att åtgärder som sker i området inte medför skada på riksintresset eller området av betydelse. Vilka åtgärder som riskerar att skada riksintresset eller
+            området av betydelse kan inte anges på förhand.<br><br>
+            För mer information om sådana riksintressen som av sekretesskäl inte kan redovisas öppet
+            se avsnitt Värdebeskrivning för riksintressen och områden av betydelse som helt eller delvis
+            omfattas av försvarssekretess.">Påverkansområde övrigt</button>
+          <button class="boxBtn" imgurl="legend/Pverkansomrdefrbullerellerannanrisk_5.png" data-text="Påverkansområde för buller eller annan risk visualiseras i karta med en rosafärgad yta.<br><br>
+            Påverkansområde för buller eller annan risk är ett område vars utbredning kan sträcka sig
+            utanför det geografiska område som utgör själva riksintresset eller området av betydelse för
+            totalförsvarets militära del. Inom detta påverkansområde kan den verksamhet som bedrivs
+            inom riksintresset eller området av betydelse påverka omgivningen, genom exempelvis buller
+            eller andra risker.<br><br>
+            Vissa mark- och vattenåtgärder inom påverkansområde för buller eller annan risk kan i sin
+            tur påverka den verksamhet som bedrivs och riskerar således att påtagligt skada de värden
+            som utgör riksintresset eller område av betydelse. Inom ett påverkansområde för buller eller
+            annan risk riskerar exempelvis tillkomst av störningskänslig bebyggelse (bostäder, skolor och
+            vårdlokaler) skada riksintresset eller området av betydelse.">Påverkansområde för buller eller annan risk</button>
+          <button class="boxBtn" imgurl="legend/Pverkansomrdevderradar_7.png" data-text="Påverkansområde väderradar visualiseras i karta med en rödstreckad cirkel.<br><br>
+            Ett påverkansområde väderradar är ett påverkansområde kring en väderradar som utgör
+            riksintresse för totalförsvarets militära del. Inom detta påverkansområde riskerar vindkraft
+            och andra höga objekt skada väderradarstationen varför särskilda analyser behöver genomföras av Försvarsmakten innan sådana uppförs. Ett påverkansområde väderradar utgörs av ett
+            cirkulärt område med 50 kilometers radie i förhållande till väderradarstationen.">Påverkansområde väderradar</button>
+          <button class="boxBtn" imgurl="legend/Stoppomrdefrvindkraftverk_1.png" data-text="Stoppområde för vindkraftverk visualiseras i karta med en orangefärgad cirkel.<br><br>
+            Ett stoppområde för vindkraft är ett påverkansområde kring en väderradar som utgör riksintresse för totalförsvarets militära del. Väderradarer utgör skyddsvärd meteorologisk infrastruktur och utgör ett riksintresse. Dessa ägs av SMHI men kravställs av Försvarsmakten.
+            Väderradarer riskerar framför allt att skadas av vindkraftsetableringar. Det finns därför en
+            internationell överenskommelse att inga vindkraftverk ska uppföras inom en fem kilometers radie från en väderradarstation. Detta påverkansområde utgör därför stoppområde för
+            vindkraftverk. Även andra höga objekt riskera skada riksintresset varpå en analys behöver
+            genomföras av Försvarsmakten innan sådana uppförs inom området.">Stoppområde för vindkraftverk</button>
+          </div>
+          <div id="textBox" class="textBox">
+          <h2 id="textHeader"></h2>
+          <p id="textPara"></p>
+          <img id="legendImage" width="15" height="15">            
+          </div>
+          
+        </div>
+        
+    </header>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/multi-style-layer.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="data/Stoppomrdefrvindkraftverk_1.js"></script>
+        <script src="data/Riksintressepland_2.js"></script>
+        <script src="data/Riksintresseihavetsjvningsomrde_3.js"></script>
+        <script src="data/Pverkansomrdevrigt_4.js"></script>
+        <script src="data/Pverkansomrdefrbullerellerannanrisk_5.js"></script>
+        <script src="data/Stoppomrdefrhgaobjekt_6.js"></script>
+        <script src="data/Pverkansomrdevderradar_7.js"></script>
+        <script src="data/Pverkansomrdecivilflygplats_8.js"></script>
+        <script src="data/Omrdemedsrskiltbehovavhinderfrihet_9.js"></script>
+        <script src="data/Omrdeavbetydelsepland_10.js"></script>
+        <script src="data/MSAomrde_11.js"></script>
+        <script src="data/Lgflygningsomrdemedpverkansomrde_12.js"></script>
+        <script src="data/Vderradar_13.js"></script>
+        <script>
+        var map = L.map('map', {
+            zoomControl:true, maxZoom:28, minZoom:3
+        }).fitBounds([[59.390303999427694,-1.6908538062518572],[66.94337570955919,30.048447359434018]]);
+        var hash = new L.Hash(map);
+        //map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        function removeEmptyRowsFromPopupContent(content, feature) {
+         var tempDiv = document.createElement('div');
+         tempDiv.innerHTML = content;
+         var rows = tempDiv.querySelectorAll('tr');
+         for (var i = 0; i < rows.length; i++) {
+             var td = rows[i].querySelector('td.visible-with-data');
+             var key = td ? td.id : '';
+             if (td && td.classList.contains('visible-with-data') && feature.properties[key] == null) {
+                 rows[i].parentNode.removeChild(rows[i]);
+             }
+         }
+         return tempDiv.innerHTML;
+        }
+        document.querySelector(".leaflet-popup-pane").addEventListener("load", function(event) {
+          var tagName = event.target.tagName,
+            popup = map._popup;
+          // Also check if flag is already set.
+          if (tagName === "IMG" && popup && !popup._updated) {
+            popup._updated = true; // Set flag to prevent looping.
+            popup.update();
+          }
+        }, true);
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+        }
+        map.createPane('pane_Positron_0');
+        map.getPane('pane_Positron_0').style.zIndex = 400;
+        var layer_Positron_0 = L.tileLayer('https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+            pane: 'pane_Positron_0',
+            name: 'pane_Positron_0',
+            opacity: 1.0,
+            //attribution: '<a href="https://cartodb.com/basemaps/">Map tiles by CartoDB, under CC BY 3.0. Data by OpenStreetMap, under ODbL.</a>',
+            minZoom: 3,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 20
+        });
+        layer_Positron_0;
+        map.addLayer(layer_Positron_0);
+        function pop_Stoppomrdefrvindkraftverk_1(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">OBJID</th>\
+                        <td>' + (feature.properties['OBJID'] !== null ? autolinker.link(feature.properties['OBJID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">OBJNAMN</th>\
+                        <td>' + (feature.properties['OBJNAMN'] !== null ? autolinker.link(feature.properties['OBJNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">LNAMN</th>\
+                        <td>' + (feature.properties['LNAMN'] !== null ? autolinker.link(feature.properties['LNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KNAMN</th>\
+                        <td>' + (feature.properties['KNAMN'] !== null ? autolinker.link(feature.properties['KNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KATEGORI</th>\
+                        <td>' + (feature.properties['KATEGORI'] !== null ? autolinker.link(feature.properties['KATEGORI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">UKATEGORI</th>\
+                        <td>' + (feature.properties['UKATEGORI'] !== null ? autolinker.link(feature.properties['UKATEGORI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SHAPE_Leng</th>\
+                        <td>' + (feature.properties['SHAPE_Leng'] !== null ? autolinker.link(feature.properties['SHAPE_Leng'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SHAPE_Area</th>\
+                        <td>' + (feature.properties['SHAPE_Area'] !== null ? autolinker.link(feature.properties['SHAPE_Area'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            /*layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);*/
+            layer.on(
+            {
+           //dblclick: zoomToFeature,
+           //mouseout : resetSweHighlight,
+           click : zoomToFeature
+           //mousemove: colorFeature
+            
+            } );
+        }
+
+        function style_Stoppomrdefrvindkraftverk_1_0() {
+            return {
+                pane: 'pane_Stoppomrdefrvindkraftverk_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,158,23,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Stoppomrdefrvindkraftverk_1');
+        map.getPane('pane_Stoppomrdefrvindkraftverk_1').style.zIndex = 412 ;
+        map.getPane('pane_Stoppomrdefrvindkraftverk_1').style['mix-blend-mode'] = 'normal';
+        var layer_Stoppomrdefrvindkraftverk_1 = new L.geoJson(json_Stoppomrdefrvindkraftverk_1, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Stoppomrdefrvindkraftverk_1',
+            layerName: 'layer_Stoppomrdefrvindkraftverk_1',
+            pane: 'pane_Stoppomrdefrvindkraftverk_1',
+            onEachFeature: pop_Stoppomrdefrvindkraftverk_1,
+            style: style_Stoppomrdefrvindkraftverk_1_0,
+        });
+        bounds_group.addLayer(layer_Stoppomrdefrvindkraftverk_1);
+        map.addLayer(layer_Stoppomrdefrvindkraftverk_1);
+        function pop_Riksintressepland_2(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">OBJID</th>\
+                        <td>' + (feature.properties['OBJID'] !== null ? autolinker.link(feature.properties['OBJID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">OBJNAMN</th>\
+                        <td>' + (feature.properties['OBJNAMN'] !== null ? autolinker.link(feature.properties['OBJNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">LNAMN</th>\
+                        <td>' + (feature.properties['LNAMN'] !== null ? autolinker.link(feature.properties['LNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KNAMN</th>\
+                        <td>' + (feature.properties['KNAMN'] !== null ? autolinker.link(feature.properties['KNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KATEGORI</th>\
+                        <td>' + (feature.properties['KATEGORI'] !== null ? autolinker.link(feature.properties['KATEGORI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">UKATEGORI</th>\
+                        <td>' + (feature.properties['UKATEGORI'] !== null ? autolinker.link(feature.properties['UKATEGORI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SHAPE_Leng</th>\
+                        <td>' + (feature.properties['SHAPE_Leng'] !== null ? autolinker.link(feature.properties['SHAPE_Leng'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SHAPE_Area</th>\
+                        <td>' + (feature.properties['SHAPE_Area'] !== null ? autolinker.link(feature.properties['SHAPE_Area'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            /*layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);*/
+            layer.on(
+            {
+           //dblclick: zoomToFeature,
+           //mouseout : resetSweHighlight,
+           click : zoomToFeature
+           //mousemove: colorFeature
+            
+            } );
+        }
+
+        function style_Riksintressepland_2_0() {
+            return {
+                pane: 'pane_Riksintressepland_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Riksintressepland_2');
+        map.getPane('pane_Riksintressepland_2').style.zIndex = 411;
+        map.getPane('pane_Riksintressepland_2').style['mix-blend-mode'] = 'normal';
+        var layer_Riksintressepland_2 = new L.geoJson(json_Riksintressepland_2, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Riksintressepland_2',
+            layerName: 'layer_Riksintressepland_2',
+            pane: 'pane_Riksintressepland_2',
+            onEachFeature: pop_Riksintressepland_2,
+            style: style_Riksintressepland_2_0,
+        });
+        bounds_group.addLayer(layer_Riksintressepland_2);
+        map.addLayer(layer_Riksintressepland_2);
+        function pop_Riksintresseihavetsjvningsomrde_3(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">OBJID</th>\
+                        <td>' + (feature.properties['OBJID'] !== null ? autolinker.link(feature.properties['OBJID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">OBJNAMN</th>\
+                        <td>' + (feature.properties['OBJNAMN'] !== null ? autolinker.link(feature.properties['OBJNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">LNAMN</th>\
+                        <td>' + (feature.properties['LNAMN'] !== null ? autolinker.link(feature.properties['LNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KNAMN</th>\
+                        <td>' + (feature.properties['KNAMN'] !== null ? autolinker.link(feature.properties['KNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KATEGORI</th>\
+                        <td>' + (feature.properties['KATEGORI'] !== null ? autolinker.link(feature.properties['KATEGORI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">UKATEGORI</th>\
+                        <td>' + (feature.properties['UKATEGORI'] !== null ? autolinker.link(feature.properties['UKATEGORI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SHAPE_Leng</th>\
+                        <td>' + (feature.properties['SHAPE_Leng'] !== null ? autolinker.link(feature.properties['SHAPE_Leng'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SHAPE_Area</th>\
+                        <td>' + (feature.properties['SHAPE_Area'] !== null ? autolinker.link(feature.properties['SHAPE_Area'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            /*layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);*/
+            layer.on(
+            {
+           //dblclick: zoomToFeature,
+           //mouseout : resetSweHighlight,
+           click : zoomToFeature
+           //mousemove: colorFeature
+            
+            } );
+        }
+
+        function style_Riksintresseihavetsjvningsomrde_3_0() {
+            return {
+                pane: 'pane_Riksintresseihavetsjvningsomrde_3',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(153,190,245,0.6039215686274509)',
+                interactive: true,
+            }
+        }
+        function style_Riksintresseihavetsjvningsomrde_3_1() {
+            return {
+                pane: 'pane_Riksintresseihavetsjvningsomrde_3',
+                opacity: 1,
+                color: 'rgba(153,190,245,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Riksintresseihavetsjvningsomrde_3');
+        map.getPane('pane_Riksintresseihavetsjvningsomrde_3').style.zIndex = 403;
+        map.getPane('pane_Riksintresseihavetsjvningsomrde_3').style['mix-blend-mode'] = 'normal';
+        var layer_Riksintresseihavetsjvningsomrde_3 = new L.geoJson.multiStyle(json_Riksintresseihavetsjvningsomrde_3, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Riksintresseihavetsjvningsomrde_3',
+            layerName: 'layer_Riksintresseihavetsjvningsomrde_3',
+            pane: 'pane_Riksintresseihavetsjvningsomrde_3',
+            onEachFeature: pop_Riksintresseihavetsjvningsomrde_3,
+            styles: [style_Riksintresseihavetsjvningsomrde_3_0,style_Riksintresseihavetsjvningsomrde_3_1,]
+        });
+        bounds_group.addLayer(layer_Riksintresseihavetsjvningsomrde_3);
+        map.addLayer(layer_Riksintresseihavetsjvningsomrde_3);
+        function pop_Pverkansomrdevrigt_4(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">OBJID</th>\
+                        <td>' + (feature.properties['OBJID'] !== null ? autolinker.link(feature.properties['OBJID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">OBJNAMN</th>\
+                        <td>' + (feature.properties['OBJNAMN'] !== null ? autolinker.link(feature.properties['OBJNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">LNAMN</th>\
+                        <td>' + (feature.properties['LNAMN'] !== null ? autolinker.link(feature.properties['LNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KNAMN</th>\
+                        <td>' + (feature.properties['KNAMN'] !== null ? autolinker.link(feature.properties['KNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KATEGORI</th>\
+                        <td>' + (feature.properties['KATEGORI'] !== null ? autolinker.link(feature.properties['KATEGORI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">UKATEGORI</th>\
+                        <td>' + (feature.properties['UKATEGORI'] !== null ? autolinker.link(feature.properties['UKATEGORI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SHAPE_Leng</th>\
+                        <td>' + (feature.properties['SHAPE_Leng'] !== null ? autolinker.link(feature.properties['SHAPE_Leng'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SHAPE_Area</th>\
+                        <td>' + (feature.properties['SHAPE_Area'] !== null ? autolinker.link(feature.properties['SHAPE_Area'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            /*layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);*/
+            layer.on(
+            {
+           //dblclick: zoomToFeature,
+           //mouseout : resetSweHighlight,
+           click : zoomToFeature
+           //mousemove: colorFeature
+            
+            } );
+        }
+
+        function style_Pverkansomrdevrigt_4_0() {
+            return {
+                pane: 'pane_Pverkansomrdevrigt_4',
+                opacity: 1,
+                color: 'rgba(148,102,171,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(181,102,203,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Pverkansomrdevrigt_4');
+        map.getPane('pane_Pverkansomrdevrigt_4').style.zIndex = 408;
+        map.getPane('pane_Pverkansomrdevrigt_4').style['mix-blend-mode'] = 'normal';
+        var layer_Pverkansomrdevrigt_4 = new L.geoJson(json_Pverkansomrdevrigt_4, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Pverkansomrdevrigt_4',
+            layerName: 'layer_Pverkansomrdevrigt_4',
+            pane: 'pane_Pverkansomrdevrigt_4',
+            onEachFeature: pop_Pverkansomrdevrigt_4,
+            style: style_Pverkansomrdevrigt_4_0,
+        });
+        bounds_group.addLayer(layer_Pverkansomrdevrigt_4);
+        map.addLayer(layer_Pverkansomrdevrigt_4);
+        function pop_Pverkansomrdefrbullerellerannanrisk_5(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">OBJID</th>\
+                        <td>' + (feature.properties['OBJID'] !== null ? autolinker.link(feature.properties['OBJID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">OBJNAMN</th>\
+                        <td>' + (feature.properties['OBJNAMN'] !== null ? autolinker.link(feature.properties['OBJNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">LNAMN</th>\
+                        <td>' + (feature.properties['LNAMN'] !== null ? autolinker.link(feature.properties['LNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KNAMN</th>\
+                        <td>' + (feature.properties['KNAMN'] !== null ? autolinker.link(feature.properties['KNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KATEGORI</th>\
+                        <td>' + (feature.properties['KATEGORI'] !== null ? autolinker.link(feature.properties['KATEGORI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">UKATEGORI</th>\
+                        <td>' + (feature.properties['UKATEGORI'] !== null ? autolinker.link(feature.properties['UKATEGORI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SHAPE_Leng</th>\
+                        <td>' + (feature.properties['SHAPE_Leng'] !== null ? autolinker.link(feature.properties['SHAPE_Leng'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SHAPE_Area</th>\
+                        <td>' + (feature.properties['SHAPE_Area'] !== null ? autolinker.link(feature.properties['SHAPE_Area'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            /*layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);*/
+            layer.on(
+            {
+           //dblclick: zoomToFeature,
+           //mouseout : resetSweHighlight,
+           click : zoomToFeature
+           //mousemove: colorFeature
+            
+            } );
+        }
+
+        function style_Pverkansomrdefrbullerellerannanrisk_5_0() {
+            return {
+                pane: 'pane_Pverkansomrdefrbullerellerannanrisk_5',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,73,228,1.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Pverkansomrdefrbullerellerannanrisk_5');
+        map.getPane('pane_Pverkansomrdefrbullerellerannanrisk_5').style.zIndex = 409;
+        map.getPane('pane_Pverkansomrdefrbullerellerannanrisk_5').style['mix-blend-mode'] = 'normal';
+        var layer_Pverkansomrdefrbullerellerannanrisk_5 = new L.geoJson(json_Pverkansomrdefrbullerellerannanrisk_5, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Pverkansomrdefrbullerellerannanrisk_5',
+            layerName: 'layer_Pverkansomrdefrbullerellerannanrisk_5',
+            pane: 'pane_Pverkansomrdefrbullerellerannanrisk_5',
+            onEachFeature: pop_Pverkansomrdefrbullerellerannanrisk_5,
+            style: style_Pverkansomrdefrbullerellerannanrisk_5_0,
+        });
+        bounds_group.addLayer(layer_Pverkansomrdefrbullerellerannanrisk_5);
+        map.addLayer(layer_Pverkansomrdefrbullerellerannanrisk_5);
+        function pop_Stoppomrdefrhgaobjekt_6(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">OBJID</th>\
+                        <td>' + (feature.properties['OBJID'] !== null ? autolinker.link(feature.properties['OBJID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">OBJNAMN</th>\
+                        <td>' + (feature.properties['OBJNAMN'] !== null ? autolinker.link(feature.properties['OBJNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">LNAMN</th>\
+                        <td>' + (feature.properties['LNAMN'] !== null ? autolinker.link(feature.properties['LNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KNAMN</th>\
+                        <td>' + (feature.properties['KNAMN'] !== null ? autolinker.link(feature.properties['KNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KATEGORI</th>\
+                        <td>' + (feature.properties['KATEGORI'] !== null ? autolinker.link(feature.properties['KATEGORI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">UKATEGORI</th>\
+                        <td>' + (feature.properties['UKATEGORI'] !== null ? autolinker.link(feature.properties['UKATEGORI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SHAPE_Leng</th>\
+                        <td>' + (feature.properties['SHAPE_Leng'] !== null ? autolinker.link(feature.properties['SHAPE_Leng'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SHAPE_Area</th>\
+                        <td>' + (feature.properties['SHAPE_Area'] !== null ? autolinker.link(feature.properties['SHAPE_Area'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            /*layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);*/
+            layer.on(
+            {
+           //dblclick: zoomToFeature,
+           //mouseout : resetSweHighlight,
+           click : zoomToFeature
+           //mousemove: colorFeature
+            
+            } );
+        }
+
+        function style_Stoppomrdefrhgaobjekt_6_0() {
+            return {
+                pane: 'pane_Stoppomrdefrhgaobjekt_6',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,144,152,0.5568627450980392)',
+                interactive: true,
+            }
+        }
+        function style_Stoppomrdefrhgaobjekt_6_1() {
+            return {
+                pane: 'pane_Stoppomrdefrhgaobjekt_6',
+                opacity: 1,
+                color: 'rgba(255,90,104,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 3.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Stoppomrdefrhgaobjekt_6');
+        map.getPane('pane_Stoppomrdefrhgaobjekt_6').style.zIndex = 407;
+        map.getPane('pane_Stoppomrdefrhgaobjekt_6').style['mix-blend-mode'] = 'normal';
+        var layer_Stoppomrdefrhgaobjekt_6 = new L.geoJson.multiStyle(json_Stoppomrdefrhgaobjekt_6, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Stoppomrdefrhgaobjekt_6',
+            layerName: 'layer_Stoppomrdefrhgaobjekt_6',
+            pane: 'pane_Stoppomrdefrhgaobjekt_6',
+            onEachFeature: pop_Stoppomrdefrhgaobjekt_6,
+            styles: [style_Stoppomrdefrhgaobjekt_6_0,style_Stoppomrdefrhgaobjekt_6_1,]
+        });
+        bounds_group.addLayer(layer_Stoppomrdefrhgaobjekt_6);
+        map.addLayer(layer_Stoppomrdefrhgaobjekt_6);
+        function pop_Pverkansomrdevderradar_7(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">OBJID</th>\
+                        <td>' + (feature.properties['OBJID'] !== null ? autolinker.link(feature.properties['OBJID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">OBJNAMN</th>\
+                        <td>' + (feature.properties['OBJNAMN'] !== null ? autolinker.link(feature.properties['OBJNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">LNAMN</th>\
+                        <td>' + (feature.properties['LNAMN'] !== null ? autolinker.link(feature.properties['LNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KNAMN</th>\
+                        <td>' + (feature.properties['KNAMN'] !== null ? autolinker.link(feature.properties['KNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KATEGORI</th>\
+                        <td>' + (feature.properties['KATEGORI'] !== null ? autolinker.link(feature.properties['KATEGORI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">UKATEGORI</th>\
+                        <td>' + (feature.properties['UKATEGORI'] !== null ? autolinker.link(feature.properties['UKATEGORI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SHAPE_Leng</th>\
+                        <td>' + (feature.properties['SHAPE_Leng'] !== null ? autolinker.link(feature.properties['SHAPE_Leng'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SHAPE_Area</th>\
+                        <td>' + (feature.properties['SHAPE_Area'] !== null ? autolinker.link(feature.properties['SHAPE_Area'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            /*layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);*/
+            layer.on(
+            {
+           //dblclick: zoomToFeature,
+           //mouseout : resetSweHighlight,
+           click : zoomToFeature
+           //mousemove: colorFeature
+            
+            } );
+            
+        }
+
+        function style_Pverkansomrdevderradar_7_0() {
+            return {
+                pane: 'pane_Pverkansomrdevderradar_7',
+                opacity: 1,
+                color: 'rgba(201,28,0,1.0)',
+                dashArray: '8.0,4.0',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Pverkansomrdevderradar_7');
+        map.getPane('pane_Pverkansomrdevderradar_7').style.zIndex = 405;
+        map.getPane('pane_Pverkansomrdevderradar_7').style['mix-blend-mode'] = 'normal';
+        var layer_Pverkansomrdevderradar_7 = new L.geoJson(json_Pverkansomrdevderradar_7, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Pverkansomrdevderradar_7',
+            layerName: 'layer_Pverkansomrdevderradar_7',
+            pane: 'pane_Pverkansomrdevderradar_7',
+            onEachFeature: pop_Pverkansomrdevderradar_7,
+            style: style_Pverkansomrdevderradar_7_0,
+        });
+        bounds_group.addLayer(layer_Pverkansomrdevderradar_7);
+        map.addLayer(layer_Pverkansomrdevderradar_7);
+        function pop_Pverkansomrdecivilflygplats_8(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">OBJID</th>\
+                        <td>' + (feature.properties['OBJID'] !== null ? autolinker.link(feature.properties['OBJID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">OBJNAMN</th>\
+                        <td>' + (feature.properties['OBJNAMN'] !== null ? autolinker.link(feature.properties['OBJNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">LNAMN</th>\
+                        <td>' + (feature.properties['LNAMN'] !== null ? autolinker.link(feature.properties['LNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KNAMN</th>\
+                        <td>' + (feature.properties['KNAMN'] !== null ? autolinker.link(feature.properties['KNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KATEGORI</th>\
+                        <td>' + (feature.properties['KATEGORI'] !== null ? autolinker.link(feature.properties['KATEGORI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">UKATEGORI</th>\
+                        <td>' + (feature.properties['UKATEGORI'] !== null ? autolinker.link(feature.properties['UKATEGORI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SHAPE_Leng</th>\
+                        <td>' + (feature.properties['SHAPE_Leng'] !== null ? autolinker.link(feature.properties['SHAPE_Leng'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SHAPE_Area</th>\
+                        <td>' + (feature.properties['SHAPE_Area'] !== null ? autolinker.link(feature.properties['SHAPE_Area'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            /*layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);*/
+            layer.on(
+            {
+           //dblclick: zoomToFeature,
+           //mouseout : resetSweHighlight,
+           click : zoomToFeature
+           //mousemove: colorFeature
+            
+            } );
+        }
+
+        var pattern_Pverkansomrdecivilflygplats_8_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 5.0,
+            color: '#e41a1c',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 315
+        });
+        pattern_Pverkansomrdecivilflygplats_8_0.addTo(map);
+        function style_Pverkansomrdecivilflygplats_8_0() {
+            return {
+                pane: 'pane_Pverkansomrdecivilflygplats_8',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_Pverkansomrdecivilflygplats_8_0,
+                interactive: true,
+            }
+        }
+        function style_Pverkansomrdecivilflygplats_8_1() {
+            return {
+                pane: 'pane_Pverkansomrdecivilflygplats_8',
+                opacity: 1,
+                color: 'rgba(228,26,28,1.0)',
+                dashArray: '12.0,6.0',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 3.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Pverkansomrdecivilflygplats_8');
+        map.getPane('pane_Pverkansomrdecivilflygplats_8').style.zIndex = 406;
+        map.getPane('pane_Pverkansomrdecivilflygplats_8').style['mix-blend-mode'] = 'normal';
+        var layer_Pverkansomrdecivilflygplats_8 = new L.geoJson.multiStyle(json_Pverkansomrdecivilflygplats_8, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Pverkansomrdecivilflygplats_8',
+            layerName: 'layer_Pverkansomrdecivilflygplats_8',
+            pane: 'pane_Pverkansomrdecivilflygplats_8',
+            onEachFeature: pop_Pverkansomrdecivilflygplats_8,
+            styles: [style_Pverkansomrdecivilflygplats_8_0,style_Pverkansomrdecivilflygplats_8_1,]
+        });
+        bounds_group.addLayer(layer_Pverkansomrdecivilflygplats_8);
+        map.addLayer(layer_Pverkansomrdecivilflygplats_8);
+        function pop_Omrdemedsrskiltbehovavhinderfrihet_9(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">OBJID</th>\
+                        <td>' + (feature.properties['OBJID'] !== null ? autolinker.link(feature.properties['OBJID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">OBJNAMN</th>\
+                        <td>' + (feature.properties['OBJNAMN'] !== null ? autolinker.link(feature.properties['OBJNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">LNAMN</th>\
+                        <td>' + (feature.properties['LNAMN'] !== null ? autolinker.link(feature.properties['LNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KNAMN</th>\
+                        <td>' + (feature.properties['KNAMN'] !== null ? autolinker.link(feature.properties['KNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KATEGORI</th>\
+                        <td>' + (feature.properties['KATEGORI'] !== null ? autolinker.link(feature.properties['KATEGORI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">UKATEGORI</th>\
+                        <td>' + (feature.properties['UKATEGORI'] !== null ? autolinker.link(feature.properties['UKATEGORI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SHAPE_Leng</th>\
+                        <td>' + (feature.properties['SHAPE_Leng'] !== null ? autolinker.link(feature.properties['SHAPE_Leng'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SHAPE_Area</th>\
+                        <td>' + (feature.properties['SHAPE_Area'] !== null ? autolinker.link(feature.properties['SHAPE_Area'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            /*layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);*/
+            layer.on(
+            {
+           //dblclick: zoomToFeature,
+           //mouseout : resetSweHighlight,
+           click : zoomToFeature
+           //mousemove: colorFeature
+            
+            } );
+        }
+
+        var pattern_Omrdemedsrskiltbehovavhinderfrihet_9_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 5.0,
+            color: '#3faa0d',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 315
+        });
+        pattern_Omrdemedsrskiltbehovavhinderfrihet_9_0.addTo(map);
+        function style_Omrdemedsrskiltbehovavhinderfrihet_9_0() {
+            return {
+                pane: 'pane_Omrdemedsrskiltbehovavhinderfrihet_9',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_Omrdemedsrskiltbehovavhinderfrihet_9_0,
+                interactive: true,
+            }
+        }
+        function style_Omrdemedsrskiltbehovavhinderfrihet_9_1() {
+            return {
+                pane: 'pane_Omrdemedsrskiltbehovavhinderfrihet_9',
+                opacity: 1,
+                color: 'rgba(38,115,0,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'miter',
+                weight: 3.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Omrdemedsrskiltbehovavhinderfrihet_9');
+        map.getPane('pane_Omrdemedsrskiltbehovavhinderfrihet_9').style.zIndex = 404;
+        map.getPane('pane_Omrdemedsrskiltbehovavhinderfrihet_9').style['mix-blend-mode'] = 'normal';
+        var layer_Omrdemedsrskiltbehovavhinderfrihet_9 = new L.geoJson.multiStyle(json_Omrdemedsrskiltbehovavhinderfrihet_9, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Omrdemedsrskiltbehovavhinderfrihet_9',
+            layerName: 'layer_Omrdemedsrskiltbehovavhinderfrihet_9',
+            pane: 'pane_Omrdemedsrskiltbehovavhinderfrihet_9',
+            onEachFeature: pop_Omrdemedsrskiltbehovavhinderfrihet_9,
+            styles: [style_Omrdemedsrskiltbehovavhinderfrihet_9_0,style_Omrdemedsrskiltbehovavhinderfrihet_9_1,]
+        });
+        bounds_group.addLayer(layer_Omrdemedsrskiltbehovavhinderfrihet_9);
+        map.addLayer(layer_Omrdemedsrskiltbehovavhinderfrihet_9);
+        function pop_Omrdeavbetydelsepland_10(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">OBJID</th>\
+                        <td>' + (feature.properties['OBJID'] !== null ? autolinker.link(feature.properties['OBJID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">OBJNAMN</th>\
+                        <td>' + (feature.properties['OBJNAMN'] !== null ? autolinker.link(feature.properties['OBJNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">LNAMN</th>\
+                        <td>' + (feature.properties['LNAMN'] !== null ? autolinker.link(feature.properties['LNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KNAMN</th>\
+                        <td>' + (feature.properties['KNAMN'] !== null ? autolinker.link(feature.properties['KNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KATEGORI</th>\
+                        <td>' + (feature.properties['KATEGORI'] !== null ? autolinker.link(feature.properties['KATEGORI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">UKATEGORI</th>\
+                        <td>' + (feature.properties['UKATEGORI'] !== null ? autolinker.link(feature.properties['UKATEGORI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SHAPE_Leng</th>\
+                        <td>' + (feature.properties['SHAPE_Leng'] !== null ? autolinker.link(feature.properties['SHAPE_Leng'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SHAPE_Area</th>\
+                        <td>' + (feature.properties['SHAPE_Area'] !== null ? autolinker.link(feature.properties['SHAPE_Area'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            /*layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);*/
+            layer.on(
+            {
+           //dblclick: zoomToFeature,
+           //mouseout : resetSweHighlight,
+           click : zoomToFeature
+           //mousemove: colorFeature
+            
+            } );
+        }
+
+        function style_Omrdeavbetydelsepland_10_0() {
+            return {
+                pane: 'pane_Omrdeavbetydelsepland_10',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '8.0,4.0',
+                lineCap: 'square',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Omrdeavbetydelsepland_10');
+        map.getPane('pane_Omrdeavbetydelsepland_10').style.zIndex = 410;
+        map.getPane('pane_Omrdeavbetydelsepland_10').style['mix-blend-mode'] = 'normal';
+        var layer_Omrdeavbetydelsepland_10 = new L.geoJson(json_Omrdeavbetydelsepland_10, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Omrdeavbetydelsepland_10',
+            layerName: 'layer_Omrdeavbetydelsepland_10',
+            pane: 'pane_Omrdeavbetydelsepland_10',
+            onEachFeature: pop_Omrdeavbetydelsepland_10,
+            style: style_Omrdeavbetydelsepland_10_0,
+        });
+        bounds_group.addLayer(layer_Omrdeavbetydelsepland_10);
+        map.addLayer(layer_Omrdeavbetydelsepland_10);
+        function pop_MSAomrde_11(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">OBJECTID</th>\
+                        <td>' + (feature.properties['OBJECTID'] !== null ? autolinker.link(feature.properties['OBJECTID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">OBJID</th>\
+                        <td>' + (feature.properties['OBJID'] !== null ? autolinker.link(feature.properties['OBJID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">OBJNAMN</th>\
+                        <td>' + (feature.properties['OBJNAMN'] !== null ? autolinker.link(feature.properties['OBJNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">LNAMN</th>\
+                        <td>' + (feature.properties['LNAMN'] !== null ? autolinker.link(feature.properties['LNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KNAMN</th>\
+                        <td>' + (feature.properties['KNAMN'] !== null ? autolinker.link(feature.properties['KNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KATEGORI</th>\
+                        <td>' + (feature.properties['KATEGORI'] !== null ? autolinker.link(feature.properties['KATEGORI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">UKATEGORI</th>\
+                        <td>' + (feature.properties['UKATEGORI'] !== null ? autolinker.link(feature.properties['UKATEGORI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SHAPE_Leng</th>\
+                        <td>' + (feature.properties['SHAPE_Leng'] !== null ? autolinker.link(feature.properties['SHAPE_Leng'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SHAPE_Area</th>\
+                        <td>' + (feature.properties['SHAPE_Area'] !== null ? autolinker.link(feature.properties['SHAPE_Area'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            /*layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);*/
+            layer.on(
+            {
+           //dblclick: zoomToFeature,
+           //mouseout : resetSweHighlight,
+           click : zoomToFeature
+           //mousemove: colorFeature
+            
+            } );
+        }
+
+        function style_MSAomrde_11_0() {
+            return {
+                pane: 'pane_MSAomrde_11',
+                opacity: 1,
+                color: 'rgba(0,108,255,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_MSAomrde_11');
+        map.getPane('pane_MSAomrde_11').style.zIndex = 402;
+        map.getPane('pane_MSAomrde_11').style['mix-blend-mode'] = 'normal';
+        var layer_MSAomrde_11 = new L.geoJson(json_MSAomrde_11, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_MSAomrde_11',
+            layerName: 'layer_MSAomrde_11',
+            pane: 'pane_MSAomrde_11',
+            onEachFeature: pop_MSAomrde_11,
+            style: style_MSAomrde_11_0,
+        });
+        bounds_group.addLayer(layer_MSAomrde_11);
+        map.addLayer(layer_MSAomrde_11);
+        function pop_Lgflygningsomrdemedpverkansomrde_12(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">OBJID</th>\
+                        <td>' + (feature.properties['OBJID'] !== null ? autolinker.link(feature.properties['OBJID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">OBJNAMN</th>\
+                        <td>' + (feature.properties['OBJNAMN'] !== null ? autolinker.link(feature.properties['OBJNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">LNAMN</th>\
+                        <td>' + (feature.properties['LNAMN'] !== null ? autolinker.link(feature.properties['LNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KNAMN</th>\
+                        <td>' + (feature.properties['KNAMN'] !== null ? autolinker.link(feature.properties['KNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KATEGORI</th>\
+                        <td>' + (feature.properties['KATEGORI'] !== null ? autolinker.link(feature.properties['KATEGORI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">UKATEGORI</th>\
+                        <td>' + (feature.properties['UKATEGORI'] !== null ? autolinker.link(feature.properties['UKATEGORI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SHAPE_Leng</th>\
+                        <td>' + (feature.properties['SHAPE_Leng'] !== null ? autolinker.link(feature.properties['SHAPE_Leng'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SHAPE_Area</th>\
+                        <td>' + (feature.properties['SHAPE_Area'] !== null ? autolinker.link(feature.properties['SHAPE_Area'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            /*layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);*/
+            layer.on(
+            {
+           //dblclick: zoomToFeature,
+           //mouseout : resetSweHighlight,
+           click : zoomToFeature
+           //mousemove: colorFeature
+            
+            } );
+        }
+
+        var pattern_Lgflygningsomrdemedpverkansomrde_12_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 5.0,
+            color: '#0084a8',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 315
+        });
+        pattern_Lgflygningsomrdemedpverkansomrde_12_0.addTo(map);
+        function style_Lgflygningsomrdemedpverkansomrde_12_0() {
+            return {
+                pane: 'pane_Lgflygningsomrdemedpverkansomrde_12',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_Lgflygningsomrdemedpverkansomrde_12_0,
+                interactive: true,
+            }
+        }
+        function style_Lgflygningsomrdemedpverkansomrde_12_1() {
+            return {
+                pane: 'pane_Lgflygningsomrdemedpverkansomrde_12',
+                opacity: 1,
+                color: 'rgba(0,76,115,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'miter',
+                weight: 3.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Lgflygningsomrdemedpverkansomrde_12');
+        map.getPane('pane_Lgflygningsomrdemedpverkansomrde_12').style.zIndex = 401;
+        map.getPane('pane_Lgflygningsomrdemedpverkansomrde_12').style['mix-blend-mode'] = 'normal';
+        var layer_Lgflygningsomrdemedpverkansomrde_12 = new L.geoJson.multiStyle(json_Lgflygningsomrdemedpverkansomrde_12, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Lgflygningsomrdemedpverkansomrde_12',
+            layerName: 'layer_Lgflygningsomrdemedpverkansomrde_12',
+            pane: 'pane_Lgflygningsomrdemedpverkansomrde_12',
+            onEachFeature: pop_Lgflygningsomrdemedpverkansomrde_12,
+            styles: [style_Lgflygningsomrdemedpverkansomrde_12_0,style_Lgflygningsomrdemedpverkansomrde_12_1,]
+        });
+        bounds_group.addLayer(layer_Lgflygningsomrdemedpverkansomrde_12);
+        map.addLayer(layer_Lgflygningsomrdemedpverkansomrde_12);
+        function pop_Vderradar_13(feature, layer) {
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">OBJID</th>\
+                        <td>' + (feature.properties['OBJID'] !== null ? autolinker.link(feature.properties['OBJID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">OBJNAMN</th>\
+                        <td>' + (feature.properties['OBJNAMN'] !== null ? autolinker.link(feature.properties['OBJNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">LNAMN</th>\
+                        <td>' + (feature.properties['LNAMN'] !== null ? autolinker.link(feature.properties['LNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KNAMN</th>\
+                        <td>' + (feature.properties['KNAMN'] !== null ? autolinker.link(feature.properties['KNAMN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">KATEGORI</th>\
+                        <td>' + (feature.properties['KATEGORI'] !== null ? autolinker.link(feature.properties['KATEGORI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">UKATEGORI</th>\
+                        <td>' + (feature.properties['UKATEGORI'] !== null ? autolinker.link(feature.properties['UKATEGORI'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SHAPE_Leng</th>\
+                        <td>' + (feature.properties['SHAPE_Leng'] !== null ? autolinker.link(feature.properties['SHAPE_Leng'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SHAPE_Area</th>\
+                        <td>' + (feature.properties['SHAPE_Area'] !== null ? autolinker.link(feature.properties['SHAPE_Area'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            /*layer.bindPopup(popupContent, {maxHeight: 400});
+            var popup = layer.getPopup();
+            var content = popup.getContent();
+            var updatedContent = removeEmptyRowsFromPopupContent(content, feature);
+            popup.setContent(updatedContent);*/
+            layer.on(
+            {
+           //dblclick: zoomToFeature,
+           //mouseout : resetSweHighlight,
+           click : zoomToFeature
+           //mousemove: colorFeature
+            
+            } );
+        }
+
+        function style_Vderradar_13_0() {
+            return {
+                pane: 'pane_Vderradar_13',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Vderradar_13');
+        map.getPane('pane_Vderradar_13').style.zIndex = 413;
+        map.getPane('pane_Vderradar_13').style['mix-blend-mode'] = 'normal';
+        var layer_Vderradar_13 = new L.geoJson(json_Vderradar_13, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Vderradar_13',
+            layerName: 'layer_Vderradar_13',
+            pane: 'pane_Vderradar_13',
+            onEachFeature: pop_Vderradar_13,
+            style: style_Vderradar_13_0,
+        });
+        bounds_group.addLayer(layer_Vderradar_13);
+        map.addLayer(layer_Vderradar_13);
+        setBounds();
+            
+        
+            
+            
+        var layers = {
+        'Riksinterssen på land': layer_Riksintressepland_2,
+        'Riksinterssen i havet (sjöövningsområde)': layer_Riksintresseihavetsjvningsomrde_3,
+        'Område av betydelse på land': layer_Omrdeavbetydelsepland_10,
+        'Område med särskilt behov av hinderfrihet': layer_Omrdemedsrskiltbehovavhinderfrihet_9,
+        'MSA område': layer_MSAomrde_11,
+        'Lågflygningsområde med påverkansområde': layer_Lgflygningsomrdemedpverkansomrde_12,
+        'Stoppområde för höga objekt': layer_Stoppomrdefrhgaobjekt_6,
+        'Stoppområde civil flygplats': layer_Pverkansomrdecivilflygplats_8,
+        'Påverkansområde övrigt': layer_Pverkansomrdevrigt_4,
+        'Påverkansområde för buller eller annan risk': layer_Pverkansomrdefrbullerellerannanrisk_5,
+        'Påverkansområde väderradar': layer_Pverkansomrdevderradar_7,
+        'Stoppområde för vindkraftverk': layer_Stoppomrdefrvindkraftverk_1,
+        'Väderradar': layer_Vderradar_13,
+        }; 
+            
+        
+
+        // Create a custom control
+        /*var ToggleLayersControl = L.Control.extend({
+            onAdd: function(map) {
+                var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control layerbutton');
+                container.innerHTML = '<button onclick="deactivateLayers()">inaktivera lager</button>';
+                return container;
+            }
+        });
+
+        // Add the custom control to the map
+        var toggleLayersControl = new ToggleLayersControl({ position: 'topright' });
+        toggleLayersControl.addTo(map);
+
+        // Function to toggle layers
+        function deactivateLayers() {
+    map.eachLayer(function(layer) {
+        if (layer !== layer_Positron_0) {
+            map.removeLayer(layer);
+        }
+    });
+}*/
+                  
+        var layersControl = L.control.layers({},
+        layers,
+        {collapsed: true, position: 'topright'}).addTo(map);
+            
+            
+        function zoomToFeature(e){
+        map.fitBounds(e.target.getBounds());
+        } 
+            
+        function zoomToFeature2(objid, layer){
+            layers = layer.getLayers();
+            var indexlenght = layers.length;     
+            for (var i = layer._leaflet_id - 1; i != layer._leaflet_id + indexlenght; i++) {
+            if (i != parseInt(layer._leaflet_id)){ 
+                featureId = layer._layers[i].feature.properties["OBJID"];
+                if (featureId === objid) {
+                  map.fitBounds(layer._layers[i].getBounds());
+                }
+            }      
+          }
+        }    
+             
+        
+        L.control.scale({}).addTo(map);  
+            
+        </script>
+        <div class="list">
+            <h1>Sveriges riksintressen</h1>         
+            <div>
+            <select id="file-select" onchange="loadGeoJSON()">
+                <option value=""  disabled selected>Välj ett data lager eller tryck på en figur på kartan</option>
+                <option value="data/Riksintressepland_2.js">Riksintressen på land</option>
+                <option value="data/Riksintresseihavetsjvningsomrde_3.js">Riksintressen i havet (sjöövningsområde)</option>
+                <option value="data/Omrdeavbetydelsepland_10.js">Område av betydelse på land</option>
+                <option value="data/Omrdemedsrskiltbehovavhinderfrihet_9.js">Område med särskilt behov av hinderfrihet</option>
+                <option value="data/MSAomrde_11.js">MSA område</option>
+                <option value="data/Lgflygningsomrdemedpverkansomrde_12.js">Lågflygningsområde med påverkansområde</option>
+                <option value="data/Stoppomrdefrhgaobjekt_6.js">Stoppområde för höga objekt</option>
+                <option value="data/Pverkansomrdecivilflygplats_8.js">Stoppområde civil flygplats</option>
+                <option value="data/Pverkansomrdevrigt_4.js">Påverkansområde övrigt</option>
+                <option value="data/Pverkansomrdefrbullerellerannanrisk_5.js">Påverkansområde för buller eller annan risk</option>
+                <option value="data/Pverkansomrdevderradar_7.js">Påverkansområde väderradar</option>
+                <option value="data/Stoppomrdefrvindkraftverk_1.js">Stoppområde för vindkraftverk</option>
+                <option value="data/Vderradar_13.js">Väderradar</option>
+                </select>
+            
+                <input class="searchBox" type="text" id="searchInput" placeholder="Sök...">
+                </div>
+            <div class="list-items">       
+                <ul id="geojson-properties">
+                </ul>
+            </div>
+      
+        <script>    
+
+        const geojsonFiles = [
+        'data/Stoppomrdefrvindkraftverk_1.js',
+        'data/Riksintressepland_2.js',
+        'data/Riksintresseihavetsjvningsomrde_3.js',
+        'data/Pverkansomrdevrigt_4.js',
+        'data/Pverkansomrdefrbullerellerannanrisk_5.js',
+        'data/Stoppomrdefrhgaobjekt_6.js',
+        'data/Pverkansomrdevderradar_7.js',
+        'data/Pverkansomrdecivilflygplats_8.js',
+        'data/Omrdemedsrskiltbehovavhinderfrihet_9.js',
+        'data/Omrdeavbetydelsepland_10.js',
+        'data/MSAomrde_11.js',
+        'data/Lgflygningsomrdemedpverkansomrde_12.js',
+        'data/Vderradar_13.js'
+        ];
+               
+        function loadGeoJSON() {
+            var selectedFile = document.getElementById('file-select').value;
+
+            if (!selectedFile) {
+                return;
+            }
+
+            fetch(selectedFile)
+                .then(response => response.text())
+                .then(text => {
+                    // Extracting the GeoJSON object from the JavaScript file
+                    var startIndex = text.indexOf('{');
+                    var endIndex = text.lastIndexOf('}') + 1;
+                    var jsonString = text.slice(startIndex, endIndex);
+                    var data = JSON.parse(jsonString);
+
+                    displayGeoJSONProperties(data);
+                })
+                .catch(error => console.error('Error loading GeoJSON file:', error));
+        }
+                
+        var idlist = []
+
+        function displayGeoJSONProperties(data) {
+            
+            var features = data.features;
+            var geojsonProperties = document.getElementById('geojson-properties');
+            geojsonProperties.innerHTML = '';
+
+            features.forEach(feature => {
+                var properties = feature.properties;
+                var listItem = document.createElement('li');
+                
+                var listItemID = properties.OBJID;
+                listItem.setAttribute('id', listItemID);
+                listItem.classList.add('list-itemss');
+                idlist.push(listItemID)
+                
+                Object.keys(properties).forEach((key, index) => {
+                    var propertyContainer = document.createElement('div');
+                    propertyContainer.classList.add('property');
+                    propertyContainer.classList.add('list-item');
+
+                    var propertyName = document.createElement('div');
+                    propertyName.classList.add('property-name');
+                    propertyName.textContent = key + ':';
+
+                    var propertyValue = document.createElement('div');
+                    propertyValue.classList.add('property-value');
+                    var valueWithoutQuotes = properties[key];
+                    if (typeof valueWithoutQuotes === 'string') {
+                    valueWithoutQuotes = valueWithoutQuotes.replace(/"/g, '');
+                    }
+                    if (key == 'SHAPE_Area') {
+                        valueWithoutQuotes += ' m²';
+                    } else if (key == 'SHAPE_Leng') {
+                        valueWithoutQuotes += ' cm';
+                    }
+                    propertyValue.textContent = valueWithoutQuotes;
+
+                    propertyContainer.appendChild(propertyName);
+                    propertyContainer.appendChild(propertyValue);
+
+                    // Distribute properties to columns based on index
+                    if (index < 5) {
+                        listItem.appendChild(propertyContainer);
+                    } else {
+                        // Apply different style for the second column
+                        propertyContainer.style.marginTop = '10px';
+                        listItem.appendChild(propertyContainer);
+                    }
+                    
+                });
+                
+                
+                
+                var layers2 = {};
+                layers2["layer_Riksintressepland_2"] = layer_Riksintressepland_2;
+                layers2["layer_Riksintresseihavetsjvningsomrde_3"] = layer_Riksintresseihavetsjvningsomrde_3;
+                layers2["layer_Omrdeavbetydelsepland_10"] = layer_Omrdeavbetydelsepland_10;
+                layers2["layer_Omrdemedsrskiltbehovavhinderfrihet_9"] = layer_Omrdemedsrskiltbehovavhinderfrihet_9;
+                layers2["layer_MSAomrde_11"] = layer_MSAomrde_11;
+                layers2["layer_Lgflygningsomrdemedpverkansomrde_12"] = layer_Lgflygningsomrdemedpverkansomrde_12;
+                layers2["layer_Stoppomrdefrhgaobjekt_6"] = layer_Stoppomrdefrhgaobjekt_6;
+                layers2["layer_Pverkansomrdecivilflygplats_8"] = layer_Pverkansomrdecivilflygplats_8;
+                layers2["layer_Pverkansomrdevderradar_7"] = layer_Pverkansomrdevderradar_7;
+                layers2["layer_Pverkansomrdevrigt_4"] = layer_Pverkansomrdevrigt_4;
+                layers2["layer_Pverkansomrdefrbullerellerannanrisk_5"] = layer_Pverkansomrdefrbullerellerannanrisk_5;
+                layers2["layer_Stoppomrdefrvindkraftverk_1"] = layer_Stoppomrdefrvindkraftverk_1;
+                layers2["layer_Vderradar_13"] = layer_Vderradar_13;
+                
+                
+                var layer = "layer_" + data.name;       
+                
+                listItem.addEventListener('click', function() {
+                
+                    
+                    
+                if(!map.hasLayer[layers2[layer]]){
+                    layers2[layer].addTo(map)
+                    
+                    
+                    
+                }
+                    
+                    
+                zoomToFeature2(properties.OBJID, layers2[layer])    
+                });
+                geojsonProperties.appendChild(listItem);
+                
+            });
+        }
+            
+            
+           
+        layer_Riksintressepland_2.on('click', function(event) {
+        handleLayerClick(event);
+            
+        var dropdownMenu = document.getElementById('file-select');
+    
+        var desiredIndex = 1;
+            
+        if (dropdownMenu.selectedIndex !== desiredIndex) {
+        dropdownMenu.selectedIndex = desiredIndex;
+
+        var changeEvent = new Event('change');
+        dropdownMenu.dispatchEvent(changeEvent);
+    }  
+        
+        });
+        layer_Riksintresseihavetsjvningsomrde_3.on('click', function(event) {
+        handleLayerClick(event);
+            
+        var dropdownMenu = document.getElementById('file-select');
+    
+        var desiredIndex = 2;
+            
+        if (dropdownMenu.selectedIndex !== desiredIndex) {
+        dropdownMenu.selectedIndex = desiredIndex;
+
+        var changeEvent = new Event('change');
+        dropdownMenu.dispatchEvent(changeEvent);
+    }  
+        
+        });
+        layer_Omrdeavbetydelsepland_10.on('click', function(event) {
+        handleLayerClick(event);
+            
+        var dropdownMenu = document.getElementById('file-select');
+    
+        var desiredIndex = 3;
+            
+        if (dropdownMenu.selectedIndex !== desiredIndex) {
+        dropdownMenu.selectedIndex = desiredIndex;
+
+        var changeEvent = new Event('change');
+        dropdownMenu.dispatchEvent(changeEvent);
+    }  
+        
+        });
+        layer_Omrdemedsrskiltbehovavhinderfrihet_9.on('click', function(event) {
+        handleLayerClick(event);
+            
+        var dropdownMenu = document.getElementById('file-select');
+    
+        var desiredIndex = 4;
+            
+        if (dropdownMenu.selectedIndex !== desiredIndex) {
+        dropdownMenu.selectedIndex = desiredIndex;
+
+        var changeEvent = new Event('change');
+        dropdownMenu.dispatchEvent(changeEvent);
+    }  
+        
+        });
+        layer_MSAomrde_11.on('click', function(event) {
+        handleLayerClick(event);
+            
+        var dropdownMenu = document.getElementById('file-select');
+    
+        var desiredIndex = 5;
+            
+        if (dropdownMenu.selectedIndex !== desiredIndex) {
+        dropdownMenu.selectedIndex = desiredIndex;
+
+        var changeEvent = new Event('change');
+        dropdownMenu.dispatchEvent(changeEvent);
+    }  
+        
+        });
+        layer_Lgflygningsomrdemedpverkansomrde_12.on('click', function(event) {
+        handleLayerClick(event);
+            
+        var dropdownMenu = document.getElementById('file-select');
+    
+        var desiredIndex = 6;
+            
+        if (dropdownMenu.selectedIndex !== desiredIndex) {
+        dropdownMenu.selectedIndex = desiredIndex;
+
+        var changeEvent = new Event('change');
+        dropdownMenu.dispatchEvent(changeEvent);
+    }  
+        
+        });
+        layer_Stoppomrdefrhgaobjekt_6.on('click', function(event) {
+        handleLayerClick(event);
+            
+        var dropdownMenu = document.getElementById('file-select');
+    
+        var desiredIndex = 7;
+            
+        if (dropdownMenu.selectedIndex !== desiredIndex) {
+        dropdownMenu.selectedIndex = desiredIndex;
+
+        var changeEvent = new Event('change');
+        dropdownMenu.dispatchEvent(changeEvent);
+    }  
+        
+        });
+        layer_Pverkansomrdecivilflygplats_8.on('click', function(event) {
+        handleLayerClick(event);
+            
+        var dropdownMenu = document.getElementById('file-select');
+    
+        var desiredIndex = 8;
+            
+        if (dropdownMenu.selectedIndex !== desiredIndex) {
+        dropdownMenu.selectedIndex = desiredIndex;
+
+        var changeEvent = new Event('change');
+        dropdownMenu.dispatchEvent(changeEvent);
+    }  
+        
+        });
+        layer_Pverkansomrdevderradar_7.on('click', function(event) {
+        handleLayerClick(event);
+            
+        var dropdownMenu = document.getElementById('file-select');
+    
+        var desiredIndex = 9;
+            
+        if (dropdownMenu.selectedIndex !== desiredIndex) {
+        dropdownMenu.selectedIndex = desiredIndex;
+
+        var changeEvent = new Event('change');
+        dropdownMenu.dispatchEvent(changeEvent);
+    }  
+        
+        });
+        layer_Pverkansomrdevrigt_4.on('click', function(event) {
+        handleLayerClick(event);
+            
+        var dropdownMenu = document.getElementById('file-select');
+    
+        var desiredIndex = 9;
+            
+        if (dropdownMenu.selectedIndex !== desiredIndex) {
+        dropdownMenu.selectedIndex = desiredIndex;
+
+        var changeEvent = new Event('change');
+        dropdownMenu.dispatchEvent(changeEvent);
+    }  
+        
+        });
+        layer_Pverkansomrdefrbullerellerannanrisk_5.on('click', function(event) {
+        handleLayerClick(event);
+            
+        var dropdownMenu = document.getElementById('file-select');
+    
+        var desiredIndex = 10;
+            
+        if (dropdownMenu.selectedIndex !== desiredIndex) {
+        dropdownMenu.selectedIndex = desiredIndex;
+
+        var changeEvent = new Event('change');
+        dropdownMenu.dispatchEvent(changeEvent);
+    }  
+        
+        });
+        layer_Pverkansomrdevderradar_7.on('click', function(event) {
+        handleLayerClick(event);
+            
+        var dropdownMenu = document.getElementById('file-select');
+    
+        var desiredIndex = 11;
+            
+        if (dropdownMenu.selectedIndex !== desiredIndex) {
+        dropdownMenu.selectedIndex = desiredIndex;
+
+        var changeEvent = new Event('change');
+        dropdownMenu.dispatchEvent(changeEvent);
+    }  
+        
+        });    
+        layer_Stoppomrdefrvindkraftverk_1.on('click', function(event) {
+        handleLayerClick(event);
+            
+        var dropdownMenu = document.getElementById('file-select');
+    
+        var desiredIndex = 12;
+            
+        if (dropdownMenu.selectedIndex !== desiredIndex) {
+        dropdownMenu.selectedIndex = desiredIndex;
+
+        var changeEvent = new Event('change');
+        dropdownMenu.dispatchEvent(changeEvent);
+    }  
+        
+        });  
+        layer_Vderradar_13.on('click', function(event) {
+        handleLayerClick(event);
+            
+        var dropdownMenu = document.getElementById('file-select');
+    
+        var desiredIndex = 13;
+            
+        if (dropdownMenu.selectedIndex !== desiredIndex) {
+        dropdownMenu.selectedIndex = desiredIndex;
+
+        var changeEvent = new Event('change');
+        dropdownMenu.dispatchEvent(changeEvent);
+    }  
+        
+        });  
+            
+            
+        function handleLayerClick(event) {
+            setTimeout(function() {
+            var clickedFeature = event.layer || event.target;
+            var clickedFeatureId = clickedFeature.feature.properties["OBJID"];
+            if (idlist.includes(clickedFeatureId)) {
+                var listItem = document.getElementById(clickedFeatureId);
+                if (listItem) {
+                    listItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    listItem.classList.add('highlighted');
+                    
+                    setTimeout(function() {
+                    listItem.classList.remove('highlighted');
+                    }, 1000);
+                        }
+                    }
+            
+                }, 125);
+            };
+          
+            
+        var layers3 = {
+        'Riksinterssen på land': layer_Riksintressepland_2,
+        'Riksinterssen i havet (sjöövningsområde)': layer_Riksintresseihavetsjvningsomrde_3,
+        'Område av betydelse på land': layer_Omrdeavbetydelsepland_10,
+        'Område med särskilt behov av hinderfrihet': layer_Omrdemedsrskiltbehovavhinderfrihet_9,
+        'MSA område': layer_MSAomrde_11,
+        'Lågflygningsområde med påverkansområde': layer_Lgflygningsomrdemedpverkansomrde_12,
+        'Stoppområde för höga objekt': layer_Stoppomrdefrhgaobjekt_6,
+        'Stoppområde civil flygplats': layer_Pverkansomrdecivilflygplats_8,
+        'Påverkansområde övrigt': layer_Pverkansomrdevrigt_4,
+        'Påverkansområde för buller eller annan risk': layer_Pverkansomrdefrbullerellerannanrisk_5,
+        'Påverkansområde väderradar': layer_Pverkansomrdevderradar_7,
+        'Stoppområde för vindkraftverk': layer_Stoppomrdefrvindkraftverk_1,
+        'Väderradar': layer_Vderradar_13,
+        };    
+            
+        document.getElementById("showBoxBtn").addEventListener("click", function() {
+          var box = document.getElementById("box");
+          if (box.classList.contains("hidden")) {
+            box.classList.remove("hidden");
+          } else {
+            box.classList.add("hidden");
+          }
+        });
+
+        document.querySelectorAll(".boxBtn").forEach(function(btn) {
+          btn.addEventListener("click", function() {
+            var text = this.getAttribute("data-text");
+            var imageUrl = this.getAttribute("imgurl");
+            document.getElementById("textHeader").textContent = this.textContent;
+            document.getElementById("textPara").innerHTML = text;
+            document.getElementById("legendImage").src = imageUrl;
+
+          });
+        });  
+        
+        document.getElementById('searchInput').addEventListener('input', function (event) {
+    const searchTerm = event.target.value.toLowerCase();
+    const listItems = document.querySelectorAll('.list-itemss');
+
+    listItems.forEach(function (item) {
+
+            const propertyValues = item.querySelectorAll('.property-value');
+            let matches = false;
+
+            propertyValues.forEach(function (valueElement) {
+                const valueText = valueElement.textContent.toLowerCase();
+                if (valueText.includes(searchTerm)) {
+                    matches = true;
+                }
+            });
+
+            if (matches) {
+                item.style.display = '';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    });
+
+    
+
+    
+
+        </script>
+        
+        
+            
+        </div>
+    </body>
+</html>
